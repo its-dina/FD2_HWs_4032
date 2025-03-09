@@ -9,17 +9,16 @@ def angular_velocity_to_euler(w_b):
 
     wx, wy, wz = w_b
     
-    # Assuming initial Euler angles (phi, theta, psi) as zero
+
     phi, theta, psi = 0.0, 0.0, 0.0
     
-    # Euler rate transformation matrix
     T = np.array([
         [1, np.sin(phi) * np.tan(theta), np.cos(phi) * np.tan(theta)],
         [0, np.cos(phi), -np.sin(phi)],
         [0, np.sin(phi) / np.cos(theta), np.cos(phi) / np.cos(theta)]
     ])
     
-    # Compute Euler angle rates
+
     euler_rates = np.dot(T, np.array([wx, wy, wz]))
     phi_dot, theta_dot, psi_dot = euler_rates
     
@@ -32,31 +31,31 @@ def transform_matrix_info(mat, tol=1e-3):
 
     mat = np.array(mat, dtype=float)
     
-    # Check matrix dimensions
+
     if mat.shape != (3, 3):
         return "Input matrix does not meet rotation matrix conditions"
     
-    # Check determinant
+
     det_val = np.linalg.det(mat)
     if not isclose(det_val, 1.0, abs_tol=tol):
         return "Input matrix does not meet rotation matrix conditions"
     
-    # Check orthonormality: R^T * R should equal I
+
     should_be_identity = np.dot(mat.T, mat)
     I = np.eye(3)
     if not np.allclose(should_be_identity, I, atol=tol):
         return "Input matrix does not meet rotation matrix conditions"
     
-    # Matrix is valid; extract rotation information using SciPy
+
     rot = R.from_matrix(mat)
     
-    # Quaternion [x, y, z, w]
+  
     quaternion = rot.as_quat()
     
-    # Rotation vector (axis-angle)
+
     rotation_vector = rot.as_rotvec()
     
-    # Euler angles in ZYX order (yaw, pitch, roll) in degrees
+
     euler_angles = rot.as_euler('zyx', degrees=True)
     
     return {
@@ -82,7 +81,7 @@ def calculate_angular_velocities(V, bank_angle_deg):
         "Angular_velocity_in_body_frame": angular_velocity_body
     }
 
-# Example usage for all three functions
+
 if __name__ == "__main__":
     # Question 1 
     w_b = [0.33, 0.28, 0.16]
